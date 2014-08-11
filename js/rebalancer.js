@@ -54,3 +54,45 @@ $(document).on('change', '.shares', function() {
 $(document).on('change', '.share-price', function() {
     updateAssetValue(this);
 });
+
+function parseAssets() {
+    var assets = [];
+    for (var f = document.getElementById("asset-input").value.split("\n"), l = 0, t = amountToFraction("0"), H = amountToFraction("0"), w = 0; w < f.length; ++w)
+        if (1E5 > w && 160 > f[w].length && lineRegExp.test(f[w])) {
+            var x =
+                lineRegExp.exec(f[w]),
+                Z = x[1],
+                R = amountToFraction(x[2]),
+                L = amountToFraction(x[3]),
+                m = void 0;
+            void 0 !== x[4] && (m = amountToFraction(x[4]));
+            fn["="](0, R) ? (  alert(1) ) : void 0 !== m && fn["="](0, m) ? ( alert(2) ) : (assets.push(new Asset(l, Z, R, L, m)), t = fn["+"](t, R), H = fn["+"](H, L), ++l)
+        }
+    return assets;
+}
+
+$("#add-to-table-button").click(function() {
+    var assets = parseAssets().reverse();
+    var x;
+    for (x in assets) {
+        var asset = assets[x];
+        var row = $("#input-row").clone().prependTo("#input-table-body");
+        row.find("input").each(function(i) {
+            if(i === 0) {
+                this.setAttribute("value", asset.assetName);
+            } else if(i == 2) {
+                this.setAttribute("value", fractionToString(asset.sharePrice, 2, fn.round));
+            } else if(i == 3) {
+                this.setAttribute("value", asset.targetAllocation);
+            } else if(i == 5) {
+                this.setAttribute("value", fractionToString(asset.currentValue, 2, fn.round));
+            } else {
+                this.setAttribute("value", "");
+            }
+        });
+        row.find("button").button("enabled");
+        row.find("td").last().show().click(function() {
+            $(this).parent().remove();
+        });
+    }
+});
