@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Eric Aguilera">
+    <link rel="shortcut icon" href="">
+    <title>Title</title>
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Rebalancing Calculator</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Data Entry</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                    To use this calculator, replace the example information in the following fields and click Recalculate.
+                    Don't worry about lining up columns in the target allocation and current values field; you can even copy and paste from a spreadsheet as long as the columns are in the right order.
+                    Entering share prices is optional for each asset.
+                    The resulting table below will tell you how much of each asset to buy or sell.<br />
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Amount</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label id="radio-1" class="btn btn-default active">
+                                    <input type="radio" checked>Contribution</input>
+                                </label>
+                                <label id="radio-2" class="btn btn-default">
+                                    <input type="radio">Withdraw</input>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                <input id="contribution-input" type="number" class="form-control" placeholder="Amount" value="5000.00"/>
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" type="button">Calculate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#collapse-table-entry"
+                               href="#collapse-table-entry" class="collapsed">Table Entry</a>
+                        </h4>
+                    </div>
+                    <div id="collapse-table-entry" class="panel-collapse collapse in">
+                        <div class ="panel-body">
+                            <form id="input-1">
+                                <div class="row">
+                                    <table id="entry-table" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Asset Name</th>
+                                                <th class="text-center">Ticker</th>
+                                                <th class="text-center">Share Price</th>
+                                                <th class="text-center">Target</th>
+                                                <th class="text-center">Shares</th>
+                                                <th class="text-center">Value</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="input-table-body">
+                                            <tr id="input-row">
+                                                <td class="col-md-3">
+                                                    <input class="asset-name" type="text"/>
+                                                </td>
+                                                <td class="col-sm-1">
+                                                    <input class="ticker" type="text"/>
+                                                </td>
+                                                <td class="col-md-2">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">$</span>
+                                                        <input type="text" class="form-control share-price"/>
+                                                    </div>
+                                                </td>
+                                                <td class="col-md-2">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control"/>
+                                                        <span class="input-group-addon">%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="col-md-2">
+                                                    <input class="shares" type="number" class="form-control"/>
+                                                </td>
+                                                <td class="col-md-2">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">$</span>
+                                                        <input type="number" class="form-control asset-value" value="0.0" readonly/>
+                                                    </div>
+                                                </td>
+                                                <td class="col-xs-1">
+                                                    <button type='button' class='close' data-dismiss='alert' disabled>
+                                                        <span aria-hidden='true'>&times;</span>
+                                                        <span class='sr-only'>Close</span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class ="row">
+                                    <div class="btn-group-md">
+                                        <button id="add-row-button" type="button" class="btn btn-primary">Add Row</button>
+                                        <button type="reset" class="btn btn-primary">Reset Rows</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-target="#collapse-manual-entry"
+                               href="#collapse-manual-entry" class="collapsed">Manual Entry</a>
+                        </h4>
+                    </div>
+                    <div id="collapse-manual-entry" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <form id="input-2">
+                                <div class="row">
+                                    <textarea id="asset-input" class="form-control" rows="10" cols="80">ASSET NAME                TARGET     VALUE      SHARE PRICE
+        Bond fund                        20%            16500.00     50.00
+        TIPS fund                        10%             6500.00      62.12
+        Domestic Stock ETF        40%            43500.00     68.75
+        International Stock ETF   30%            33500.00     48.80</textarea>
+                                </div>
+                                <div class ="row">
+                                    <div class="btn-group-md">
+                                        <button id="add-to-table-button" type="button" class="btn btn-primary">Add to Table</button>
+                                        <button type="reset" class="btn btn-primary">Restore Example Information</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Results</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="results-body" class="panel-body">
+                <noscript>
+                    <div class="alert alert-danger" role="alert">This calculator requires JavaScript.</div>
+                </noscript>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <p class="text-muted">&copy; 2014 EDawg878</p>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="js/biginteger.js" type="text/javascript"></script>
+<script src="js/schemeNumber.js" type="text/javascript"></script>
+<script src="js/rebalancer.js" type="text/javascript"></script>
+
+</body>
+</html>
