@@ -153,12 +153,12 @@ function isWithdraw() {
 function recalculate() {
     var valid = true;
     var body = document.getElementById("results-body");
-    var notifications = "";
     while (null !== body.firstChild) body.removeChild(body.firstChild);
-    var e = document.getElementById("contribution-input");
-    var h = amountToFraction(e.value);
+    var input = document.getElementById("contribution-input");
+    var amount = amountToFraction(input.value);
+    var notifications = "";
 
-    if(fn["negative?"](h)) {
+    if(fn["negative?"](amount)) {
         if(isContribution()) {
             notifications += danger("<strong>Error:</strong> Contribution amount cannot be negative.");
         } else if(isWithdraw()) {
@@ -167,33 +167,30 @@ function recalculate() {
         valid = false;
     }
 
-    if (void 0 === h || fn["="](0, h)) notifications += danger("<strong>Error:</strong> Invalid contribution amount."), valid = false;
-    for (var f = document.getElementById("asset-input").value.split("\n"), k = [], l = 0, e = [], t = amountToFraction("0"), H = amountToFraction("0"), w = 0; w < f.length; ++w)
-        if (1E5 > w && 160 > f[w].length && lineRegExp.test(f[w])) {
-            var x =
-                lineRegExp.exec(f[w]),
-                Z = x[1],
-                R = amountToFraction(x[2]),
-                L = amountToFraction(x[3]),
-                m = void 0;
-            void 0 !== x[4] && (m = amountToFraction(x[4]));
-            fn["="](0, R) ? (notifications += warning("Asset " + Z + " has a target allocation of zero and was ignored.")) : void 0 !== m && fn["="](0, m) ? (notifications += warning("Asset " + Z + " has a share price of zero and was ignored.")) : (e.push(new Asset(l, Z, R, L, m)), t = fn["+"](t, R), H = fn["+"](H, L), ++l)
-        } else k.push(w + 1);
-    0 < k.length && (notifications += warning("These input line(s) were ignored due to their formatting: <strong>" + k.join(", ") + "</strong>."));
-    fn["="]("1", t) || fn["="]("100",
-        t) ? valid && fn["<="](fn["+"](H, h), 0) ? (notifications += danger("<strong>Error:</strong> Withdrawal amount is greater than or equal to portfolio value.</span>"), valid = !1) : fn["="]("100", t) && e.forEach(function(c) {
-        c.targetAllocation = fn["/"](c.targetAllocation, t)
-    }) : (notifications += danger("<strong>Error:</strong> Total target allocation does not equal 100%.</span>"), valid = false);
+    if(isWithdraw()) {
+        amount = fn["-"](amount);
+    }
+
+    if (void 0 == amount || fn["="](0, amount)) notifications += danger("<strong>Error:</strong> Invalid contribution amount."), valid = false;
+
+    // old code removed here
+
+    var val = parseAssets(amount);
+    var assets = val[0];
+    notifications += val[1];
+
+    var sum = sumValues(assets);
+
     var p = document.createElement("p");
     p.setAttribute("id", "console");
     p.innerHTML = notifications;
     body.appendChild(p);
+
+    if(assets.length == 0) return;
+
     if (valid) {
         p.innerHTML += info("<strong>Note:</strong> Buy and sell values are rounded towards zero.");
-        if(isWithdraw()) {
-            h = fn["-"](h);
-        }
-        optimalLazyRebalance(h,e);
+        optimalLazyRebalance(amount,assets);
         var table = document.createElement("table");
         table.setAttribute("id", "results-table");
         table.setAttribute("class", "table");
@@ -202,13 +199,62 @@ function recalculate() {
         M.push("<tr><th id='asset-name'>Asset name</th><th id='share-price'>Share price</th><th id='initial-value'>Initial value</th><th id='initial-portion'>Initial portion</th><th id='final-portion'>Final portion</th><th id='target-allocation'>Target allocation</th><th id='amount-column'>Amount to <span class='positive'>+Buy</span>&nbsp;or&nbsp;<span class='negative'>" + htmlMinus + "Sell</span></th><th id='shares-column'>Shares to <span class='positive'>+Buy</span>&nbsp;or&nbsp;<span class='negative'>" +
             htmlMinus + "Sell</span></th></tr>");
         M.push("</thead>\n<tbody>");
-        e.forEach(function(c) {
-            M.push(c.toRowHTML(h, H))
+        assets.forEach(function(c) {
+            M.push(c.toRowHTML(amount, sum))
         });
         M.push("</tbody>");
         table.innerHTML = M.join("\n");
         body.appendChild(table);
     }
+}
+
+function parseAssets(amount) {
+    var assets = [];
+    var targetSum = amountToFraction("0");
+    var valueSum = amountToFraction("0");
+    var notifications = "";
+    var i = 0;
+    var j = 0;
+    $('#entry-table tr').each(function(){
+        if(i++ == 0) return;
+        var row = $(this);
+        var name = $(row).find('.asset-name').val();
+        var ticker = $(row).find('.ticker').val();
+        var price = $(row).find('.share-price').val();
+        var target = $(row).find('.target-allocation').val();
+        var shares = $(row).find('.shares').val();
+        var value = $(row).find('.asset-value').val();
+        if(! name || ! target || ! value || ! price) return;
+        target = amountToFraction(target);
+        value = amountToFraction(value);
+        price = amountToFraction(price);
+        if(fn["="](0,target)) {
+            notifications += warning("Asset " + name + " has a target allocation of zero and was ignored.");
+        } else if(fn["="](0,price)) {
+            notifications += warning("Asset " + name + " has a share price of zero and was ignored.")
+        } else {
+            targetSum = fn["+"](targetSum, target);
+            valueSum = fn["+"](valueSum, value);
+            assets.push(new Asset(j++, name, target, value, price));
+        }
+    });
+    if(!fn["="]("100", targetSum)) {
+        notifications = danger("Total target allocation does not equal 100%.");
+        assets = [];
+    } else if(fn["negative?"](amount) && fn[">="](fn["abs"](amount), valueSum)) {
+        notifications = danger("Withdrawal amount is greater than or equal to portfolio value.");
+        assets = [];
+    }
+    return [assets, notifications];
+}
+
+function sumValues(assets) {
+    var sum = amountToFraction("0");
+    for (var i in assets) {
+        var asset = assets[i];
+        sum = fn["+"](sum, asset.currentValue);
+    }
+    return sum;
 }
 
 recalculate();

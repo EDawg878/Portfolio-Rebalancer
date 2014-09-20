@@ -55,7 +55,7 @@ $(document).on('change', '.share-price', function() {
     updateAssetValue(this);
 });
 
-function parseAssets() {
+function parseManualEntry() {
     var assets = [];
     for (var f = document.getElementById("asset-input").value.split("\n"), l = 0, t = amountToFraction("0"), H = amountToFraction("0"), w = 0; w < f.length; ++w)
         if (1E5 > w && 160 > f[w].length && lineRegExp.test(f[w])) {
@@ -72,7 +72,7 @@ function parseAssets() {
 }
 
 $("#add-to-table-button").click(function() {
-    var assets = parseAssets().reverse();
+    var assets = parseManualEntry().reverse();
     var x;
     for (x in assets) {
         var asset = assets[x];
@@ -95,4 +95,10 @@ $("#add-to-table-button").click(function() {
             $(this).parent().remove();
         });
     }
+    $('.panel-collapse').collapse('hide');
+    $('.panel-collapse').collapse('show');
+});
+
+$("#reset-button").click(function() {
+    $("#entry-table").find('tr').slice(0, -1).remove(); // TODO fix breaking future calculations
 });
